@@ -2,12 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\CharacterRepository;
+use App\Repository\CharactersRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CharacterRepository::class)]
-#[ORM\Table(name: '`character`')]
-class Character
+#[ORM\Entity(repositoryClass: CharactersRepository::class)]
+class Characters
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,10 +23,10 @@ class Character
     private ?int $strength = null;
 
     #[ORM\Column]
-    private ?int $durability = null;
+    private ?int $speed = null;
 
     #[ORM\Column]
-    private ?int $speed = null;
+    private ?int $durability = null;
 
     #[ORM\Column]
     private ?int $power = null;
@@ -76,18 +75,6 @@ class Character
         return $this;
     }
 
-    public function getDurability(): ?int
-    {
-        return $this->durability;
-    }
-
-    public function setDurability(int $durability): static
-    {
-        $this->durability = $durability;
-
-        return $this;
-    }
-
     public function getSpeed(): ?int
     {
         return $this->speed;
@@ -96,6 +83,18 @@ class Character
     public function setSpeed(int $speed): static
     {
         $this->speed = $speed;
+
+        return $this;
+    }
+
+    public function getDurability(): ?int
+    {
+        return $this->durability;
+    }
+
+    public function setDurability(int $durability): static
+    {
+        $this->durability = $durability;
 
         return $this;
     }

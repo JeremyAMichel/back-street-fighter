@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Character;
+use App\Entity\Characters;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Character>
+ * @extends ServiceEntityRepository<Characters>
  */
-class CharacterRepository extends ServiceEntityRepository
+class CharactersRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Character::class);
+        parent::__construct($registry, Characters::class);
     }
 
     //    /**
-    //     * @return Character[] Returns an array of Character objects
+    //     * @return Characters[] Returns an array of Characters objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class CharacterRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Character
+    //    public function findOneBySomeField($value): ?Characters
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')
