@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/characters')]
 class CharacterController extends AbstractController
@@ -27,18 +28,23 @@ class CharacterController extends AbstractController
         return $this->json($character);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id}', name: 'api_character_delete', methods: ['DELETE'])]
     public function delete(int $id, CharactersRepository $characterRepository, EntityManagerInterface $entityManager): JsonResponse
     {
+        // TODO: Check if the user is the owner of the character
+
         $character = $characterRepository->find($id);
         $entityManager->remove($character);
         $entityManager->flush();
         return $this->json(['message' => 'Character deleted']);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/', name: 'api_character_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
+        
         $data = json_decode($request->getContent(), true);
         $character = new Characters();
         $character->setName($data['name']);
@@ -48,15 +54,19 @@ class CharacterController extends AbstractController
         $character->setDurability($data['durability']);
         $character->setPower($data['power']);
         $character->setCombat($data['combat']);
+
+        // TODO : Set the user as the owner of the character
         
         $entityManager->persist($character);
         $entityManager->flush();
         return $this->json($character, 201);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id}', name: 'api_character_update', methods: ['PUT'])]
     public function update(int $id, Request $request, CharactersRepository $characterRepository, EntityManagerInterface $entityManager): JsonResponse
     {
+        // TODO: Check if the user is the owner of the character
         $character = $characterRepository->find($id);
         $data = json_decode($request->getContent(), true);
         empty($data['name']) ? true : $character->setName($data['name']);
