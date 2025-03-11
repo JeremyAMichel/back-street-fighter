@@ -44,21 +44,57 @@ class CharacterController extends AbstractController
     #[Route('/', name: 'api_character_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        
-        $data = json_decode($request->getContent(), true);
+
+        // Création du personnage
         $character = new Characters();
-        $character->setName($data['name']);
-        $character->setImagePath($data['imagePath']);
-        $character->setStrength($data['strength']);
-        $character->setSpeed($data['speed']);
-        $character->setDurability($data['durability']);
-        $character->setPower($data['power']);
-        $character->setCombat($data['combat']);
+
+        // Si on reçoit un FormData
+        $character->setName($request->request->get('name'));
+        $character->setStrength((int)$request->request->get('strength'));
+        $character->setSpeed((int)$request->request->get('speed'));
+        $character->setDurability((int)$request->request->get('durability'));
+        $character->setPower((int)$request->request->get('power'));
+        $character->setCombat((int)$request->request->get('combat'));
+
+        // Traitement de l'image uploadée
+        $imageFile = $request->files->get('image');
+
+        if ($imageFile) {
+            // Générer un nom de fichier unique
+            $newFilename = md5(uniqid()) . '.' . $imageFile->guessExtension();
+
+            // Définir le dossier où enregistrer les images
+            $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/uploads/characters';
+
+            // Créer le dossier s'il n'existe pas
+            if (!file_exists($uploadsDirectory)) {
+                mkdir($uploadsDirectory, 0777, true);
+            }
+
+            // Déplacer le fichier dans le dossier cible
+            try {
+                $imageFile->move(
+                    $uploadsDirectory,
+                    $newFilename
+                );
+
+                // Enregistrer le chemin de l'image dans la base de données
+                $character->setImagePath('/uploads/characters/' . $newFilename);
+            } catch (\Exception $e) {
+                return $this->json([
+                    'message' => 'Erreur lors de l\'upload de l\'image: ' . $e->getMessage()
+                ], JsonResponse::HTTP_BAD_REQUEST);
+            }
+        } else {
+            $character->setImagePath('https://picsum.photos/900/600');
+        }
+
 
         // TODO : Set the user as the owner of the character
-        
+
         $entityManager->persist($character);
         $entityManager->flush();
+
         return $this->json($character, 201);
     }
 
@@ -76,7 +112,7 @@ class CharacterController extends AbstractController
         empty($data['durability']) ? true : $character->setDurability($data['durability']);
         empty($data['power']) ? true : $character->setPower($data['power']);
         empty($data['combat']) ? true : $character->setCombat($data['combat']);
-        
+
         $entityManager->persist($character);
         $entityManager->flush();
         return $this->json($character);
