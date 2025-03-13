@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CharactersRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CharactersRepository::class)]
 class Characters
@@ -11,28 +12,41 @@ class Characters
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['character:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['character:read', 'user:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['character:read', 'user:read'])]
     private ?string $imagePath = null;
 
     #[ORM\Column]
+    #[Groups(['character:read', 'user:read'])]
     private ?int $strength = null;
 
     #[ORM\Column]
+    #[Groups(['character:read', 'user:read'])]
     private ?int $speed = null;
 
     #[ORM\Column]
+    #[Groups(['character:read', 'user:read'])]
     private ?int $durability = null;
 
     #[ORM\Column]
+    #[Groups(['character:read', 'user:read'])]
     private ?int $power = null;
 
     #[ORM\Column]
+    #[Groups(['character:read', 'user:read'])]
     private ?int $combat = null;
+
+    #[ORM\ManyToOne(inversedBy: 'characters')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['character:read'])]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -119,6 +133,18 @@ class Characters
     public function setCombat(int $combat): static
     {
         $this->combat = $combat;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
